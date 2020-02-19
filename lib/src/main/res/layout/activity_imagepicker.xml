@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.jokerwan.lib.view.FitView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="#373737"/>
+
+    <include
+        android:id="@+id/layout_actionBar"
+        layout="@layout/include_layout_actionbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_images"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="1dp"
+        android:background="@android:color/black" />
+
+    <FrameLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#373737">
+
+        <TextView
+            android:id="@+id/tv_preview"
+            android:layout_width="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/preview"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_send"
+            android:layout_width="75dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center|end"
+            android:textSize="15sp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/shape_green_btn"
+            android:text="发送(9)"/>
+
+    </FrameLayout>
+
+</LinearLayout>

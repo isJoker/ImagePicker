@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jokerwan.lib.view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="1dp">
+
+    <com.jokerwan.lib.view.SquareImageView
+        android:id="@+id/item_pre_image"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/icon_image_default"
+        android:scaleType="fitXY" />
+
+    <com.jokerwan.lib.view.SquareImageView
+        android:id="@+id/item_image_border"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/image_border"
+        android:scaleType="fitXY"
+        android:visibility="gone"/>
+
+</com.jokerwan.lib.view.SquareRelativeLayout>
