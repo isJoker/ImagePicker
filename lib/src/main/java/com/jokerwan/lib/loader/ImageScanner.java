@@ -53,16 +53,10 @@ public class ImageScanner extends AbsMediaScanner<MediaFile> {
     protected MediaFile parse(Cursor cursor) {
 
         String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        String mime = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE));
-        Integer folderId = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID));
-        String folderName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
         long dateToken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
 
         MediaFile mediaFile = new MediaFile();
         mediaFile.setPath(path);
-        mediaFile.setMime(mime);
-        mediaFile.setFolderId(folderId);
-        mediaFile.setFolderName(folderName);
         mediaFile.setDateToken(dateToken);
 
         return mediaFile;

@@ -20,7 +20,6 @@ import com.jokerwan.lib.ImagePicker;
 import com.jokerwan.lib.R;
 import com.jokerwan.lib.adapter.ImagePickerAdapter;
 import com.jokerwan.lib.bean.MediaFile;
-import com.jokerwan.lib.bean.MediaFolder;
 import com.jokerwan.lib.loader.MediaLoadCallback;
 import com.jokerwan.lib.manager.CommonExecutor;
 import com.jokerwan.lib.manager.ConfigManager;
@@ -28,7 +27,7 @@ import com.jokerwan.lib.manager.SelectionManager;
 import com.jokerwan.lib.task.ImageLoadTask;
 import com.jokerwan.lib.task.MediaLoadTask;
 import com.jokerwan.lib.task.VideoLoadTask;
-import com.jokerwan.lib.utils.DataUtil;
+import com.jokerwan.lib.utils.DataHelper;
 import com.jokerwan.lib.utils.PermissionUtil;
 import com.jokerwan.lib.utils.StatusBarUtil;
 
@@ -39,16 +38,16 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
 
     private boolean isShowImage;
     private boolean isShowVideo;
-    private int mMaxCount;
+    private int maxCount;
 
-    private TextView mTvSend;
-    private TextView mTvBack;
-    private TextView mTvPreview;
-    private RecyclerView mRecyclerView;
+    private TextView tvSend;
+    private TextView tvBack;
+    private TextView tvPreview;
+    private RecyclerView recyclerView;
 
+    private ImagePickerAdapter imagePickerAdapter;
+    private List<MediaFile> mediaFileList;
     private static final int HORIZONTAL_COUNT = 4;
-    private ImagePickerAdapter mImagePickerAdapter;
-    private List<MediaFile> mMediaFileList;
     private static final int REQUEST_SELECT_IMAGES_CODE = 0x01;
     private static final int REQUEST_PERMISSION_CAMERA_CODE = 0x03;
 
@@ -122,13 +121,13 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     protected void initConfig() {
         isShowImage = ConfigManager.getInstance().isShowImage();
         isShowVideo = ConfigManager.getInstance().isShowVideo();
-        mMaxCount = ConfigManager.getInstance().getMaxCount();
-        SelectionManager.getInstance().setMaxCount(mMaxCount);
+        maxCount = ConfigManager.getInstance().getMaxCount();
+        SelectionManager.getInstance().setMaxCount(maxCount);
         //如果是多选模式，载入历史记录
         if (ConfigManager.getInstance().getSelectionMode() == ConfigManager.SELECT_MODE_MULTI) {
-            ArrayList<MediaFile> mImages = ConfigManager.getInstance().getImages();
-            if (mImages != null && mImages.size() > 0) {
-                SelectionManager.getInstance().addImagePathsToSelectList(mImages);
+            ArrayList<MediaFile> images = ConfigManager.getInstance().getImages();
+            if (images != null && images.size() > 0) {
+                SelectionManager.getInstance().addImagePathsToSelectList(images);
             }
         }
     }
@@ -137,11 +136,11 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
         StatusBarUtil.setStatusBarColorWhite(this);
         StatusBarUtil.setStatusBarTransparent(this);
 
-        mTvBack = findViewById(R.id.tv_cancel);
+        tvBack = findViewById(R.id.tv_cancel);
         TextView mTvTitle = findViewById(R.id.tv_title);
-        mTvSend = findViewById(R.id.tv_send);
-        mTvPreview = findViewById(R.id.tv_preview);
-        mRecyclerView = findViewById(R.id.rv_images);
+        tvSend = findViewById(R.id.tv_send);
+        tvPreview = findViewById(R.id.tv_preview);
+        recyclerView = findViewById(R.id.rv_images);
 
         String title = ConfigManager.getInstance().getTitle();
         if(!TextUtils.isEmpty(title)) {
@@ -149,25 +148,25 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
         }
         String btnText = ConfigManager.getInstance().getBtnText();
         if(!TextUtils.isEmpty(btnText)) {
-            mTvSend.setText(btnText);
+            tvSend.setText(btnText);
         }
     }
 
     private void initRecycle() {
         GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, HORIZONTAL_COUNT);
-        mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemViewCacheSize(50);
+        recyclerView.setLayoutManager(mGridLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(50);
 
-        mMediaFileList = new ArrayList<>();
-        mImagePickerAdapter = new ImagePickerAdapter(mMediaFileList);
-        mRecyclerView.setAdapter(mImagePickerAdapter);
-        mImagePickerAdapter.setOnItemClickListener(this);
+        mediaFileList = new ArrayList<>();
+        imagePickerAdapter = new ImagePickerAdapter(mediaFileList);
+        recyclerView.setAdapter(imagePickerAdapter);
+        imagePickerAdapter.setOnItemClickListener(this);
     }
 
 
     private void initClick() {
-        mTvBack.setOnClickListener(new View.OnClickListener() {
+        tvBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SelectionManager.getInstance().removeAll();
@@ -175,7 +174,7 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
             }
         });
         //发送
-        mTvSend.setOnClickListener(new View.OnClickListener() {
+        tvSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 commitSelectPic();
@@ -183,7 +182,7 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
         });
 
         //预览
-        mTvPreview.setOnClickListener(new View.OnClickListener() {
+        tvPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 jumpPreView();
@@ -195,7 +194,7 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     private void jumpPreView() {
         ArrayList<MediaFile> selectList = new ArrayList<>(SelectionManager.getInstance().getSelects());
         if (selectList.size() > 0) {
-            DataUtil.getInstance().setMediaData(selectList);
+            DataHelper.getInstance().setMediaData(selectList);
             Intent intent = new Intent(this, ImagePreActivity.class);
             //获取选中列表的第一个作为默认位置
             intent.putExtra(ImagePreActivity.IMAGE_POSITION, 0);
@@ -215,14 +214,15 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     }
 
     class MediaLoader implements MediaLoadCallback {
+
         @Override
-        public void loadMediaSuccess(final List<MediaFolder> mediaFolderList) {
+        public void loadMediaSuccess(final List<MediaFile> files) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //默认加载全部照片
-                    mMediaFileList.addAll(mediaFolderList.get(0).getMediaFileList());
-                    mImagePickerAdapter.notifyDataSetChanged();
+                    mediaFileList.addAll(files);
+                    imagePickerAdapter.notifyDataSetChanged();
 
                     updateCommitButton();
                 }
@@ -235,18 +235,18 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
 
         String btnText = ConfigManager.getInstance().getBtnText();
         if (selectCount == 0) {
-            mTvSend.setEnabled(false);
+            tvSend.setEnabled(false);
             if(TextUtils.isEmpty(btnText)) {
-                mTvSend.setText(getString(R.string.confirm));
+                tvSend.setText(getString(R.string.confirm));
             } else {
-                mTvSend.setText(btnText);
+                tvSend.setText(btnText);
             }
-        } else if (selectCount <= mMaxCount) {
-            mTvSend.setEnabled(true);
+        } else if (selectCount <= maxCount) {
+            tvSend.setEnabled(true);
             if(TextUtils.isEmpty(btnText)) {
-                mTvSend.setText(String.format(getString(R.string.confirm_msg), selectCount));
+                tvSend.setText(String.format(getString(R.string.confirm_msg), selectCount));
             } else {
-                mTvSend.setText(String.format(getString(R.string.confirm_text_format), btnText, selectCount));
+                tvSend.setText(String.format(getString(R.string.confirm_text_format), btnText, selectCount));
             }
         }
     }
@@ -265,13 +265,13 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     @Override
     public void onMediaCheck(View view, int position) {
         //执行选中/取消操作
-        MediaFile mediaFile = mImagePickerAdapter.getMediaFile(position);
+        MediaFile mediaFile = imagePickerAdapter.getMediaFile(position);
         if (mediaFile != null) {
             boolean addSuccess = SelectionManager.getInstance().addImageToSelectList(mediaFile);
             if (addSuccess) {
-                mImagePickerAdapter.notifyDataSetChanged();
+                imagePickerAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(this, String.format(getString(R.string.select_image_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, String.format(getString(R.string.select_image_max), maxCount), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -297,8 +297,8 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     @Override
     protected void onResume() {
         super.onResume();
-        if (mImagePickerAdapter != null) {
-            mImagePickerAdapter.notifyDataSetChanged();
+        if (imagePickerAdapter != null) {
+            imagePickerAdapter.notifyDataSetChanged();
             updateCommitButton();
         }
     }

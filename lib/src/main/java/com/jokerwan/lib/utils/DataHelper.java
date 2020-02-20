@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DataUtil {
+public class DataHelper {
 
-    private static volatile DataUtil mDataUtilInstance;
+    private static volatile DataHelper mDataUtilInstance;
     private List<MediaFile> mData = new ArrayList<>();
 
-    public static DataUtil getInstance() {
+    public static DataHelper getInstance() {
         if (mDataUtilInstance == null) {
-            synchronized (DataUtil.class) {
+            synchronized (DataHelper.class) {
                 if (mDataUtilInstance == null) {
-                    mDataUtilInstance = new DataUtil();
+                    mDataUtilInstance = new DataHelper();
                 }
             }
         }

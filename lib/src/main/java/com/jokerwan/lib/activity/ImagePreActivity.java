@@ -23,7 +23,7 @@ import com.jokerwan.lib.bean.MediaFile;
 import com.jokerwan.lib.manager.ConfigManager;
 import com.jokerwan.lib.manager.ImagePickerProvider;
 import com.jokerwan.lib.manager.SelectionManager;
-import com.jokerwan.lib.utils.DataUtil;
+import com.jokerwan.lib.utils.DataHelper;
 import com.jokerwan.lib.utils.StatusBarUtil;
 import com.jokerwan.lib.view.HackyViewPager;
 
@@ -38,13 +38,15 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
 
     private TextView tvPicIndex;
     private TextView tvSend;
-    private HackyViewPager mViewPager;
-    private RecyclerView mRePreImage;
+    private HackyViewPager viewPager;
+    private RecyclerView recyclerPreImage;
 
     public static final String IMAGE_POSITION = "imagePosition";
-    private List<MediaFile> mMediaFileList;//全部媒体（图片和视频）
-    private List<MediaFile> mSelectList;//选中列表
-    private int mPosition = 0;
+    //全部媒体（图片和视频）
+    private List<MediaFile> mediaFileList;
+    //选中列表
+    private List<MediaFile> selectList;
+    private int position = 0;
     private ImagePreThumbAdapter preViewAdapter;
 
     @Override
@@ -66,24 +68,24 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
         StatusBarUtil.setStatusBarColorWhite(this);
         StatusBarUtil.setStatusBarTransparent(this);
 
-        mViewPager = findViewById(R.id.vp_main_preImage);
-        mRePreImage = findViewById(R.id.re_preImage);
+        viewPager = findViewById(R.id.vp_main_preImage);
+        recyclerPreImage = findViewById(R.id.re_preImage);
         tvPicIndex = findViewById(R.id.tv_pic_index);
         tvSend = findViewById(R.id.tv_send);
         String btnText = ConfigManager.getInstance().getBtnText();
-        if(!TextUtils.isEmpty(btnText)) {
+        if (!TextUtils.isEmpty(btnText)) {
             tvSend.setText(btnText);
         }
     }
 
     private void initPreView() {
-        mMediaFileList = DataUtil.getInstance().getMediaData();
-        mPosition = getIntent().getIntExtra(IMAGE_POSITION, 0);
+        mediaFileList = DataHelper.getInstance().getMediaData();
+        position = getIntent().getIntExtra(IMAGE_POSITION, 0);
 
-        ImagePreViewAdapter mImagePreViewAdapter = new ImagePreViewAdapter(this,mMediaFileList);
-        mViewPager.setAdapter(mImagePreViewAdapter);
-        mViewPager.setCurrentItem(mPosition);
-        updateIndex(mPosition);
+        ImagePreViewAdapter mImagePreViewAdapter = new ImagePreViewAdapter(this, mediaFileList);
+        viewPager.setAdapter(mImagePreViewAdapter);
+        viewPager.setCurrentItem(position);
+        updateIndex(position);
     }
 
     private void updateIndex(int index) {
@@ -93,13 +95,13 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
     private void initThumbView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mRePreImage.setLayoutManager(layoutManager);
+        recyclerPreImage.setLayoutManager(layoutManager);
 
-        mSelectList = new ArrayList<>();
-        mSelectList.clear();
-        preViewAdapter = new ImagePreThumbAdapter(mSelectList);
-        mRePreImage.setAdapter(preViewAdapter);
-        mRePreImage.smoothScrollToPosition(mPosition);
+        selectList = new ArrayList<>();
+        selectList.clear();
+        preViewAdapter = new ImagePreThumbAdapter(selectList);
+        recyclerPreImage.setAdapter(preViewAdapter);
+        recyclerPreImage.smoothScrollToPosition(position);
     }
 
     private void initData() {
@@ -113,8 +115,8 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
         for (MediaFile mf : mediaFiles) {
             initPreData(mf);
         }
-        MediaFile mediaFile=mMediaFileList.get(mPosition);
-        if (mediaFile!=null&&preViewAdapter!=null){
+        MediaFile mediaFile = mediaFileList.get(position);
+        if (mediaFile != null && preViewAdapter != null) {
             preViewAdapter.setSelect(mediaFile);
         }
     }
@@ -122,9 +124,9 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
     private void initPreData(MediaFile mediaFile) {
         boolean isSelect = SelectionManager.getInstance().isImageSelect(mediaFile);
         if (isSelect) {
-            mSelectList.add(mediaFile);
+            selectList.add(mediaFile);
         } else {
-            mSelectList.remove(mediaFile);
+            selectList.remove(mediaFile);
         }
         preViewAdapter.notifyDataSetChanged();
     }
@@ -139,7 +141,7 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
         });
 
         //ViewPager滚动
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -148,8 +150,8 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
             @Override
             public void onPageSelected(int position) {
                 updateIndex(position);
-                MediaFile mediaFile=mMediaFileList.get(position);
-                if (mediaFile!=null&&preViewAdapter!=null){
+                MediaFile mediaFile = mediaFileList.get(position);
+                if (mediaFile != null && preViewAdapter != null) {
                     preViewAdapter.setSelect(mediaFile);
                 }
             }
@@ -173,15 +175,15 @@ public class ImagePreActivity extends AppCompatActivity implements ImagePreViewA
             @Override
             public void onItemClick(View view, MediaFile mediaFile) {
                 preViewAdapter.setSelect(mediaFile);
-                int position = SelectionManager.getInstance().getSelectImagePosition(mMediaFileList, mediaFile);
-                mViewPager.setCurrentItem(position);
+                int position = SelectionManager.getInstance().getSelectImagePosition(mediaFileList, mediaFile);
+                viewPager.setCurrentItem(position);
             }
         });
     }
 
     private void updateCommitButton() {
         String btnText = ConfigManager.getInstance().getBtnText();
-        if(TextUtils.isEmpty(btnText)) {
+        if (TextUtils.isEmpty(btnText)) {
             tvSend.setText(String.format(getString(R.string.confirm_msg), SelectionManager.getInstance().getSelects().size()));
         } else {
             tvSend.setText(String.format(getString(R.string.confirm_text_format), btnText, SelectionManager.getInstance().getSelects().size()));

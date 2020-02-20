@@ -14,13 +14,20 @@ public class ConfigManager {
     public static final int SELECT_MODE_SINGLE = 0;
     public static final int SELECT_MODE_MULTI = 1;
 
-    private String title;//标题
-    private String btnText;//确认按钮上的标题
-    private boolean showImage = true;//是否显示图片，默认显示
-    private boolean showVideo = true;//是否显示视频，默认显示
-    private int selectionMode = SELECT_MODE_SINGLE;//选择模式，默认单选
-    private int maxCount = 1;//最大选择数量，默认为1
-    private ArrayList<MediaFile> images;//上一次选择的图片集合
+    //标题
+    private String title;
+    //确认按钮上的标题
+    private String btnText;
+    //是否显示图片，默认显示
+    private boolean showImage = true;
+    //是否显示视频，默认显示
+    private boolean showVideo = true;
+    //选择模式，默认单选
+    private int selectionMode = SELECT_MODE_SINGLE;
+    //最大选择数量，默认为1
+    private int maxCount = 1;
+    //上一次选择的图片集合
+    private ArrayList<MediaFile> images;
 
     private ImageLoader imageLoader;
 

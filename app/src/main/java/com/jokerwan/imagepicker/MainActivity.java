@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jokerwan.lib.ImagePicker;
 import com.jokerwan.lib.bean.MediaFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextView;
     private int REQUEST_SELECT_IMAGES_CODE = 0x01;
     private CameraDialog dialog=null;
+    private ArrayList<MediaFile> images = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,18 +61,28 @@ public class MainActivity extends AppCompatActivity {
                 // 设置最大选择图片数目(默认为1，单选)
                 .setMaxCount(9)
                 .setImageLoader(new GlideLoader())
+                // 记录历史选择的照片
+//                .setImages(images)
                 .start(this, REQUEST_SELECT_IMAGES_CODE);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_IMAGES_CODE && resultCode == RESULT_OK) {
+            if(data == null) {
+                return;
+            }
             List<MediaFile> mediaFiles= (List<MediaFile>) data.getSerializableExtra(ImagePicker.EXTRA_SELECT_IMAGES);
-            StringBuffer stringBuffer = new StringBuffer();
+            if(mediaFiles != null){
+                images.clear();
+                images.addAll(mediaFiles);
+            }
+            StringBuilder stringBuffer = new StringBuilder();
             stringBuffer.append("当前选中图片路径：\n\n");
             for (int i = 0; i < mediaFiles.size(); i++) {
-                stringBuffer.append(mediaFiles.get(i).getPath() + "\n\n");
+                stringBuffer.append(mediaFiles.get(i).getPath()).append("\n\n");
             }
             mTextView.setText(stringBuffer.toString());
         }

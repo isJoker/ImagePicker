@@ -15,13 +15,11 @@ import java.util.ArrayList;
  */
 public class MediaLoadTask implements Runnable {
 
-    private Context mContext;
     private ImageScanner mImageScanner;
     private VideoScanner mVideoScanner;
     private MediaLoadCallback mMediaLoadCallback;
 
     public MediaLoadTask(Context context, MediaLoadCallback mediaLoadCallback) {
-        this.mContext = context;
         this.mMediaLoadCallback = mediaLoadCallback;
         mImageScanner = new ImageScanner(context);
         mVideoScanner = new VideoScanner(context);
@@ -40,12 +38,9 @@ public class MediaLoadTask implements Runnable {
         if (mVideoScanner != null) {
             videoFileList = mVideoScanner.queryMedia();
         }
-
         if (mMediaLoadCallback != null) {
-            mMediaLoadCallback.loadMediaSuccess(MediaHandler.getMediaFolder(mContext, imageFileList, videoFileList));
+            mMediaLoadCallback.loadMediaSuccess(MediaHandler.getSortMediaFiles(imageFileList, videoFileList));
         }
-
-
     }
 
 }

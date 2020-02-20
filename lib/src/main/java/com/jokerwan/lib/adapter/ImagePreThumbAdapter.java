@@ -21,7 +21,7 @@ public class ImagePreThumbAdapter extends RecyclerView.Adapter {
 
     private List<MediaFile> mMediaFileList;
     public OnItemClickListener mOnItemClickListener;
-    public MediaFile checkMediaFile=null;
+    public MediaFile checkMediaFile = null;
 
     public ImagePreThumbAdapter(List<MediaFile> list) {
         this.mMediaFileList = list;
@@ -74,9 +74,9 @@ public class ImagePreThumbAdapter extends RecyclerView.Adapter {
             e.printStackTrace();
         }
         //选中后边框效果
-        if (mediaFile.equals(checkMediaFile)){
+        if (mediaFile.equals(checkMediaFile)) {
             imageHolder.itemBorder.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             imageHolder.itemBorder.setVisibility(View.GONE);
         }
 
@@ -97,9 +97,9 @@ public class ImagePreThumbAdapter extends RecyclerView.Adapter {
             e.printStackTrace();
         }
         //选中后边框效果
-        if (mediaFile.equals(checkMediaFile)){
+        if (mediaFile.equals(checkMediaFile)) {
             videoHolder.itemBorder.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             videoHolder.itemBorder.setVisibility(View.GONE);
         }
 
@@ -150,7 +150,7 @@ public class ImagePreThumbAdapter extends RecyclerView.Adapter {
     }
 
     public void setSelect(MediaFile mediaFile) {
-        this.checkMediaFile=mediaFile;
+        this.checkMediaFile = mediaFile;
         notifyDataSetChanged();
     }
 

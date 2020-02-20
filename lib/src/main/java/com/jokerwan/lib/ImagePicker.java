@@ -28,46 +28,57 @@ public class ImagePicker {
         return mImagePicker;
     }
 
-
-    //设置标题
+    /**
+     * 设置标题
+     */
     public ImagePicker setTitle(String title) {
         ConfigManager.getInstance().setTitle(title);
         return mImagePicker;
     }
 
-    //设置确定按钮上的文本
+    /**
+     * 设置确定按钮上的文本
+     */
     public ImagePicker setConfirmBtnText(String btnText) {
         ConfigManager.getInstance().setBtnText(btnText);
         return mImagePicker;
     }
 
-    //是否展示图片
+    /**
+     * 是否展示图片
+     */
     public ImagePicker showImage(boolean showImage) {
         ConfigManager.getInstance().setShowImage(showImage);
         return mImagePicker;
     }
 
-    //是否展示视频
+    /**
+     * 是否展示视频
+     */
     public ImagePicker showVideo(boolean showVideo) {
         ConfigManager.getInstance().setShowVideo(showVideo);
         return mImagePicker;
     }
 
-
-    //图片最大选择数
+    /**
+     * 图片最大选择数
+     */
     public ImagePicker setMaxCount(int maxCount) {
         ConfigManager.getInstance().setMaxCount(maxCount);
         return mImagePicker;
     }
 
-
-    //设置图片加载器
+    /**
+     * 设置图片加载器
+     */
     public ImagePicker setImageLoader(ImageLoader imageLoader) {
         ConfigManager.getInstance().setImageLoader(imageLoader);
         return mImagePicker;
     }
 
-    //设置图片选择历史记录
+    /**
+     * 设置图片选择历史记录
+     */
     public ImagePicker setImages(ArrayList<MediaFile> images) {
         ConfigManager.getInstance().setImages(images);
         return mImagePicker;

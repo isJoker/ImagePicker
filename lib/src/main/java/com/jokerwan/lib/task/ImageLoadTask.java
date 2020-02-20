@@ -14,12 +14,10 @@ import java.util.ArrayList;
  */
 public class ImageLoadTask implements Runnable {
 
-    private Context mContext;
     private ImageScanner mImageScanner;
     private MediaLoadCallback mMediaLoadCallback;
 
     public ImageLoadTask(Context context, MediaLoadCallback mediaLoadCallback) {
-        this.mContext = context;
         this.mMediaLoadCallback = mediaLoadCallback;
         mImageScanner = new ImageScanner(context);
     }
@@ -32,10 +30,8 @@ public class ImageLoadTask implements Runnable {
             imageFileList = mImageScanner.queryMedia();
         }
         if (mMediaLoadCallback != null) {
-            mMediaLoadCallback.loadMediaSuccess(MediaHandler.getImageFolder(mContext, imageFileList));
+            mMediaLoadCallback.loadMediaSuccess(MediaHandler.getSortMediaFiles(imageFileList, null));
         }
-
-
     }
 
 }
